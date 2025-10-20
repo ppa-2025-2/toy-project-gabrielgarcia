@@ -1,9 +1,13 @@
 package com.example.demo.repository.entity;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+
+import org.springframework.lang.NonNull;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -36,7 +40,7 @@ public class Island extends BaseEntity {
         CIRCULAR(8); // 4
 
         private final int placements;
-        
+
         public int getPlacements() {
             return placements;
         }
@@ -58,10 +62,7 @@ public class Island extends BaseEntity {
     @Column(nullable = false)
     private Disposition disposition;
 
-    @OneToMany(mappedBy = "island", 
-        cascade = CascadeType.ALL,
-        fetch = FetchType.LAZY,
-        orphanRemoval = true)
+    @OneToMany(mappedBy = "island", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Workstation> workstations = new HashSet<>();
 
     public void removeWorkstations(Predicate<Workstation> predicate) {
@@ -100,22 +101,28 @@ public class Island extends BaseEntity {
         this.disposition = disposition;
     }
 
-
+    public void alocarWorkstation(@NonNull User user) {
+        // primeira workstation livre e seta o usuário
+        this.getWorkstations().stream()
+                .filter(ws -> ws.getUser() == null)
+                .findFirst()
+                .ifPresent(ws -> ws.setUser(user));
+    }
 
     @Override
     public String toString() {
-        return "Island [id=" + id 
-        + ", description=" + description 
-        + ", disposition=" + disposition 
-        + ", createdAt=" + createdAt 
-        + ", updatedAt=" + updatedAt 
-        + "]";
+        return "Island [id=" + id
+                + ", description=" + description
+                + ", disposition=" + disposition
+                + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt
+                + "]";
     }
 
     public Optional<Workstation> firstAvailableWorkstation() {
         return this.workstations.stream()
-            .filter(w -> w.getUser() == null)
-            .findFirst();
+                .filter(w -> w.getUser() == null)
+                .findFirst();
     }
 
     public void assignUserToTheFirstWorkstationAvailable(User user) {
@@ -123,5 +130,23 @@ public class Island extends BaseEntity {
                 .ifPresent(w -> w.setUser(user));
     }
 
-    
+    public static Island encontrarIslandParaAlocacao(@NonNull List<Island> islands) {
+        // busca ilhas começando por uma ws livre, depois duas, ...
+        Island freeIsland = islands.get(0);
+        for (int slots = 1; slots < Island.Disposition.CIRCULAR.getPlacements(); slots++) {
+            final int positions = slots;
+            var possibleIsland = islands.stream()
+                    .filter(i -> i.getWorkstations().stream()
+                            .map(Workstation::getUser)
+                            .filter(Objects::nonNull)
+                            .count() == positions)
+                    .findFirst();
+            if (possibleIsland.isPresent()) {
+                freeIsland = possibleIsland.get();
+                break;
+            }
+        }
+        return freeIsland;
+    }
+
 }

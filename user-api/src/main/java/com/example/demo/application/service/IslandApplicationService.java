@@ -3,22 +3,19 @@ package com.example.demo.application.service;
 import org.springframework.lang.NonNull;
 
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.entity.Island;
 import com.example.demo.repository.IslandRepository;
 import com.example.demo.domain.exceptions.NotFoundException;
-import com.example.demo.domain.service.IslandDomainService;
 
 public class IslandApplicationService {
 
     private final UserRepository userRepository;
     private final IslandRepository islandRepository;
-    private final IslandDomainService islandDomainService;
 
     public IslandApplicationService(UserRepository userRepository,
-            IslandRepository islandRepository,
-            IslandDomainService islandDomainService) {
+            IslandRepository islandRepository) {
         this.userRepository = userRepository;
         this.islandRepository = islandRepository;
-        this.islandDomainService = islandDomainService;
     }
 
     public void alocarWorkstationDisponivel(@NonNull Integer userId) {
@@ -26,15 +23,15 @@ public class IslandApplicationService {
         final var user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException());
 
-        // POO: agregação vs composição (aggregation vs composition)
         final var islands = islandRepository.findIslandWithAvailableWorkstations();
 
         if (islands.isEmpty()) {
             throw new IllegalStateException("Workstations not available");
         }
 
-        final var islandComWorkstationAlocada = islandDomainService.alocarWorkstation(islands, user);
+        final var island = Island.encontrarIslandParaAlocacao(islands);
+        island.alocarWorkstation(user);
 
-        islandRepository.save(islandComWorkstationAlocada);
+        islandRepository.save(island);
     }
 }
