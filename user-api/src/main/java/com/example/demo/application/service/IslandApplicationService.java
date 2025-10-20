@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.application.service;
 
 import org.springframework.lang.NonNull;
 
@@ -7,13 +7,13 @@ import com.example.demo.repository.IslandRepository;
 import com.example.demo.domain.exceptions.NotFoundException;
 import com.example.demo.domain.service.IslandDomainService;
 
-public class IslandService {
+public class IslandApplicationService {
 
     private final UserRepository userRepository;
     private final IslandRepository islandRepository;
     private final IslandDomainService islandDomainService;
 
-    public IslandService(UserRepository userRepository,
+    public IslandApplicationService(UserRepository userRepository,
             IslandRepository islandRepository,
             IslandDomainService islandDomainService) {
         this.userRepository = userRepository;
