@@ -1,12 +1,14 @@
 package com.example.demo.application.service;
 
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Service;
 
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.entity.Island;
 import com.example.demo.repository.IslandRepository;
 import com.example.demo.domain.exceptions.NotFoundException;
 
+@Service
 public class IslandApplicationService {
 
     private final UserRepository userRepository;

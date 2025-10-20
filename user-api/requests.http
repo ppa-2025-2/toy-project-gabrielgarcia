@@ -1,3 +1,8 @@
+### Alocar workstation
+POST /api/v1/users/1/alocar-workstation
+Content-Type: application/json
+
+###
 
 ### Get all users
 
