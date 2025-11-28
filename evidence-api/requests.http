@@ -1,7 +1,7 @@
 
 ### Realizar Notificação
 
-POST /api/v1/evicence HTTP/1.1
+POST /api/v1/evidence HTTP/1.1
 Host: localhost:8083
 Content-Type: multipart/form-data; boundary=arquivo
 

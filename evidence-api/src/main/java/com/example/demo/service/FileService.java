@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.io.IOException;
+
 public interface FileService {
-    public void upload(String id, String tipe, byte[] conteudo);
-} 
+    String upload(String name, String type, byte[] conteudo) throws IOException;
+}
